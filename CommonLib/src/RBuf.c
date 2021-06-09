@@ -24,14 +24,41 @@ struct CRingBuf {
 void PrintBuf(CRingBuf* rb){
 	int Total = rb->L;
 
+	// take idx from ptr
+	pMem_t Head = rb->Head;
+	pMem_t Tail = rb->Tail;
+	int HeadIdx =  Head - rb->B +1;
+	if(!Head){
+		HeadIdx = 0;
+	}
+	int TailIdx = Tail - rb->B;
+	int UsedCnt = CRingBuf_UsedSpace(rb);
+
+	//printf("Items: %d, Head: %d, Tail: %d \n", UsedCnt, HeadIdx, TailIdx);
+
 	int i = 0;
 	while(i < Total){
-		printf("%d \t,", rb->B[i]);
+		if(TailIdx == i){
+			if(CRingBuf_IsFull(rb)){
+				printf("%d:TH \t,", rb->B[i]);
+			}else{
+				printf("%d:T \t,", rb->B[i]);
+			}
+		} else if(Head == &(rb->B[i])){
+			printf("%d:H \t,", rb->B[i]);
+		} else {
+			printf("%d \t,", rb->B[i]);
+		}
 		++i;
 	}
 
-	printf("\n");
+	printf("Items: %d", UsedCnt);
+	if(CRingBuf_IsFull(rb)){
+		printf("[F]");
+	};
+	printf(", Head: %d, Tail: %d \n", HeadIdx, TailIdx);
 
+	printf("\n");
 }
 
 
@@ -46,14 +73,12 @@ int main(void) {
 	char TstDataBuf[eBufLen] = {6, 7, 8};
 	int USpace = 0;
 
-
 	int i = 0;
 	while(i < eBufLen){
 		printf("%d \t,", i);
 		++i;
 	}
 	printf("\n \n");
-
 
 	CRingBuf_Init(&TstBuf, Buf, eBufLen);
 	USpace = CRingBuf_UsedSpace(&TstBuf);
@@ -110,12 +135,6 @@ int main(void) {
 		printf("%d\t,", OutBuf[i]);
 	}
 	printf("\n\n");
-
-
-
-
-
-
 
 	return EXIT_SUCCESS;
 }
