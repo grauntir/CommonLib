@@ -16,8 +16,8 @@
 struct CRingBuf {
 	int     L;
 	pMem_t	B;
-	pMem_t	Head;
-	pMem_t	Tail;	// used as empty flag when zero
+	pMem_t	Head;	// used as FULL flag when zero
+	pMem_t	Tail;
 };
 
 
